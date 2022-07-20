@@ -1,4 +1,3 @@
-
 package gui;
 
 import dao.AlunoDao;
@@ -136,9 +135,7 @@ public class ListAluno extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tbAluno;
     // End of variables declaration//GEN-END:variables
-    private java.sql.Connection con;
-    private java.sql.Statement stmtListar;
-    private java.sql.ResultSet rsListar;
+
     private AlunoDao alunoDao;
     private CidadeDao cidadeDao;
 
@@ -170,7 +167,7 @@ public class ListAluno extends javax.swing.JDialog {
                 tbAluno.getModel().setValueAt(nomeCidade, linha, 3);
                 linha++;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }

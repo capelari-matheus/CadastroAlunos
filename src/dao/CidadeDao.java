@@ -8,127 +8,187 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JOptionPane;
 
 public class CidadeDao {
 
     private static Connection con = null;
-    private Statement stmt = null;
     private Statement stmtNavegar = null;
     private ResultSet rsNavegar = null;
-    PreparedStatement psCid = null;
+    private PreparedStatement psCid = null;
+    private ResultSet rsCid = null;
 
-    public CidadeDao() throws ClassNotFoundException, SQLException {
+    public CidadeDao() {
+        try {
+            con = ConnectionFactory.getConnection();
+            stmtNavegar = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            rsNavegar = stmtNavegar.executeQuery("select * from cidade");
+        } catch (Exception e) {
+            e.printStackTrace();
 
-        con = ConnectionFactory.getConnection();
-        stmt = con.createStatement();
-        stmtNavegar = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        rsNavegar = stmtNavegar.executeQuery("select * from cidade");
-
+        }
     }
 
-    public Cidade primeiro() throws SQLException {
+    public Cidade primeiro() {
+        try {
+            if (rsNavegar.first()) {
+                Cidade Cidade = new Cidade();
+                Cidade.setCod(rsNavegar.getInt("cod"));
+                Cidade.setNomeCidade(rsNavegar.getString("nomeCidade"));
+                Cidade.setEstado(rsNavegar.getString("estado"));
+                return Cidade;
 
-        if (rsNavegar.first()) {
-            Cidade Cidade = new Cidade();
-            Cidade.setCod(rsNavegar.getInt("cod"));
-            Cidade.setNomeCidade(rsNavegar.getString("nomeCidade"));
-            Cidade.setEstado(rsNavegar.getString("estado"));
-            return Cidade;
-
-        } else {
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
 
     }
 
-    public Cidade anterior() throws SQLException {
+    public Cidade anterior() {
+        try {
+            if (!rsNavegar.isFirst()) {
+                rsNavegar.previous();
+                Cidade Cidade = new Cidade();
+                Cidade.setCod(rsNavegar.getInt("cod"));
+                Cidade.setNomeCidade(rsNavegar.getString("nomeCidade"));
+                Cidade.setEstado(rsNavegar.getString("estado"));
+                return Cidade;
 
-        if (!rsNavegar.isFirst()) {
-            rsNavegar.previous();
-            Cidade Cidade = new Cidade();
-            Cidade.setCod(rsNavegar.getInt("cod"));
-            Cidade.setNomeCidade(rsNavegar.getString("nomeCidade"));
-            Cidade.setEstado(rsNavegar.getString("Estado"));
-            return Cidade;
-
-        } else {
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
 
     }
 
-    public Cidade proximo() throws SQLException {
+    public Cidade proximo() {
+        try {
+            if (!rsNavegar.isLast()) {
+                rsNavegar.next();
+                Cidade Cidade = new Cidade();
+                Cidade.setCod(rsNavegar.getInt("cod"));
+                Cidade.setNomeCidade(rsNavegar.getString("nomeCidade"));
+                Cidade.setEstado(rsNavegar.getString("estado"));
+                return Cidade;
 
-        if (!rsNavegar.isLast()) {
-            rsNavegar.next();
-            Cidade Cidade = new Cidade();
-            Cidade.setCod(rsNavegar.getInt("cod"));
-            Cidade.setNomeCidade(rsNavegar.getString("nomeCidade"));
-            Cidade.setEstado(rsNavegar.getString("Estado"));
-            return Cidade;
-
-        } else {
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
 
-    public Cidade ultimo() throws SQLException {
-
-        if (rsNavegar.last()) {
-            Cidade Cidade = new Cidade();
-            Cidade.setCod(rsNavegar.getInt("cod"));
-            Cidade.setNomeCidade(rsNavegar.getString("nomeCidade"));
-            Cidade.setEstado(rsNavegar.getString("Estado"));
-            return Cidade;
-        } else {
-            return null;
-        }
-
-    }
-
-    public Cidade pesquisarCidade(int cod) throws SQLException {
-
-        StringBuilder sbSelect = new StringBuilder();
-        sbSelect.setLength(0);
-        sbSelect.append(" SELECT * ");
-        sbSelect.append(" FROM cidade ");
-        sbSelect.append(" WHERE cod = ? ");
-                
-        psCid = con.prepareStatement(sbSelect.toString());
-        psCid.clearParameters();
-        psCid.setInt(1, cod);
-        ResultSet rs = psCid.executeQuery();
-
-        if (rs.next()) {
-            Cidade Cidade = new Cidade();
-            Cidade.setCod(rs.getInt("cod"));
-            Cidade.setNomeCidade(rs.getString("nomeCidade"));
-            Cidade.setEstado(rs.getString("Estado"));
-            return Cidade;
-        } else {
+    public Cidade ultimo() {
+        try {
+            if (rsNavegar.last()) {
+                Cidade Cidade = new Cidade();
+                Cidade.setCod(rsNavegar.getInt("cod"));
+                Cidade.setNomeCidade(rsNavegar.getString("nomeCidade"));
+                Cidade.setEstado(rsNavegar.getString("estado"));
+                return Cidade;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
 
-    public boolean excluirRegistro(int cod) throws SQLException {
+    public Cidade pesquisarCidade(int cod) {
+        try {
+            StringBuilder sbSelect = new StringBuilder();
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT cod, nomeCidade, estado ");
+            sbSelect.append(" FROM cidade ");
+            sbSelect.append(" WHERE cod = ? ");
 
-        stmt.executeUpdate("delete from cidade where cod = " + cod);
-        rsNavegar = stmtNavegar.executeQuery("select * from cidade");
-        return true;
+            psCid = con.prepareStatement(sbSelect.toString());
+            psCid.clearParameters();
+            psCid.setInt(1, cod);
+            rsCid = psCid.executeQuery();
+
+            if (rsCid.next()) {
+                Cidade Cidade = new Cidade();
+                Cidade.setCod(rsCid.getInt("cod"));
+                Cidade.setNomeCidade(rsCid.getString("nomeCidade"));
+                Cidade.setEstado(rsCid.getString("estado"));
+                return Cidade;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public boolean salvarRegistro(Cidade aluno) throws SQLException {
+    public boolean excluirRegistro(int cod) {
+        try {
+            StringBuilder sbSelect = new StringBuilder();
 
-        int cod = aluno.getCod();
-        String nomeCidade = aluno.getNomeCidade();
-        String estado = aluno.getEstado();
+            sbSelect.setLength(0);
+            sbSelect.append(" DELETE FROM cidade ");
+            sbSelect.append(" WHERE cod = ? ");
+
+            psCid = con.prepareStatement(sbSelect.toString());
+            psCid.clearParameters();
+            psCid.setInt(1, cod);
+            psCid.execute();
+
+            psCid.close();
+
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT * ");
+            sbSelect.append(" FROM cidade ");
+
+            psCid = con.prepareStatement(sbSelect.toString());
+            psCid.clearParameters();
+            rsNavegar = psCid.executeQuery();
+            
+            psCid.close();
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+
+    }
+
+    public boolean salvarRegistro(Cidade cidade)  {
 
         try {
-            stmt.executeUpdate("insert into cidade values ( " + cod + ", '" + nomeCidade + "', '" + estado + "')");
-            rsNavegar = stmtNavegar.executeQuery("select * from cidade");
+            StringBuilder sbSelect = new StringBuilder();
+            sbSelect.setLength(0);
+
+            sbSelect.append(" INSERT INTO cidade  ");
+            sbSelect.append(" (cod, nomeCidade, estado)  ");
+            sbSelect.append(" VALUES(?,?,?) ");
+
+            psCid = con.prepareStatement(sbSelect.toString());
+            psCid.clearParameters();
+            psCid.setInt(1, cidade.getCod());
+            psCid.setString(2, cidade.getNomeCidade());
+            psCid.setString(3, cidade.getEstado());
+
+            psCid.execute();
+
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT * ");
+            sbSelect.append(" FROM cidade ");
+
+            psCid = con.prepareStatement(sbSelect.toString());
+            psCid.clearParameters();
+            rsNavegar = psCid.executeQuery();
 
             return true;
 
@@ -139,68 +199,87 @@ public class CidadeDao {
 
     }
 
-    public List<Cidade> montarListaCidade() throws SQLException {
+    public int getCodCidadeByNome(String nomeCidade) {
+        try {
+            StringBuilder sbSelect = new StringBuilder();
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT cod ");
+            sbSelect.append(" FROM cidade ");
+            sbSelect.append(" WHERE nomeCidade = ? ");
 
-        ArrayList<Cidade> lista = new ArrayList<Cidade>();
+            psCid = con.prepareStatement(sbSelect.toString());
+            psCid.clearParameters();
+            psCid.setString(1, nomeCidade);
+            rsCid = psCid.executeQuery();
 
-        ResultSet rsCidade = stmt.executeQuery("select * from cidade");
-
-        while (rsCidade.next()) {
-            Cidade cidade = new Cidade();
-            cidade.setCod(rsCidade.getInt("cod"));
-            cidade.setNomeCidade(rsCidade.getString("nomeCidade"));
-            cidade.setEstado(rsCidade.getString("estado"));
-            lista.add(cidade);
-        }
-
-        return lista;
-
-    }
-
-    public int getCodCidadeByNome(String nomeCidade) throws SQLException {
-
-        ResultSet rsCidade = stmt.executeQuery("select * from cidade where nomeCidade = '" + nomeCidade + "'");
-
-        if (rsCidade.next()) {
-            return rsCidade.getInt("cod");
-        } else {
+            if (rsCid.next()) {
+                return rsCid.getInt("cod");
+            } else {
+                return -1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return -1;
         }
 
     }
 
-    public String getNomeCidadeByCod(int cod) throws SQLException {
+    public String getNomeCidadeByCod(int cod) {
+        try {
+            StringBuilder sbSelect = new StringBuilder();
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT nomeCidade ");
+            sbSelect.append(" FROM cidade ");
+            sbSelect.append(" WHERE cod = ? ");
 
-        ResultSet rsCidade = stmt.executeQuery("select * from cidade where cod = " + cod);
+            psCid = con.prepareStatement(sbSelect.toString());
+            psCid.clearParameters();
+            psCid.setInt(1, cod);
+            rsCid = psCid.executeQuery();
 
-        if (rsCidade.next()) {
-            return rsCidade.getString("nomeCidade");
-        } else {
+            if (rsCid.next()) {
+                return rsCid.getString("nomeCidade");
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return "";
         }
 
     }
 
-    public ArrayList ListarCidade() throws SQLException {
+    public ArrayList ListarCidade() {
 
-        Statement stmtListar = con.createStatement();
-        ResultSet rsListar = stmtListar.executeQuery("select * from cidade");
+        try {
+            ArrayList<Cidade> retorno = new ArrayList<Cidade>();
+            StringBuilder sbSelect = new StringBuilder();
 
-        ArrayList<Cidade> retorno = new ArrayList<Cidade>();
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT cod, nomeCidade, estado ");
+            sbSelect.append(" FROM cidade ");
+            sbSelect.append(" order by cod ");
 
-        while (rsListar.next()) {
-            int cod = rsListar.getInt("cod");
-            String nome = rsListar.getString("nomeCidade");
-            String estado = rsListar.getString("estado");
+            psCid = con.prepareStatement(sbSelect.toString());
+            rsCid = psCid.executeQuery();
 
-            Cidade cidade = new Cidade();
-            cidade.setCod(cod);
-            cidade.setNomeCidade(nome);
-            cidade.setEstado(estado);
+            while (rsCid.next()) {
 
-            retorno.add(cidade);
+                Cidade cidade = new Cidade();
+                cidade.setCod(rsCid.getInt("cod"));
+                cidade.setNomeCidade(rsCid.getString("nomeCidade"));
+                cidade.setEstado(rsCid.getString("estado"));
+
+                retorno.add(cidade);
+            }
+            rsCid.close();
+            psCid.close();
+
+            return retorno;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
 
-        return retorno;
     }
 }

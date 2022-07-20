@@ -167,7 +167,7 @@ public class ListCidade extends javax.swing.JDialog {
                 tbCidade.getModel().setValueAt(estado, linha, 2);
                 linha++;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }

@@ -1,6 +1,8 @@
 
 package entity;
 
+import java.util.Objects;
+
 
 public class Aluno {
     
@@ -41,5 +43,42 @@ public class Aluno {
     public void setCodCidade(int codCidade) {
         this.codCidade = codCidade;
     }    
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + this.cod;
+        hash = 79 * hash + Objects.hashCode(this.nome);
+        hash = 79 * hash + Objects.hashCode(this.sobrenome);
+        hash = 79 * hash + this.codCidade;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Aluno other = (Aluno) obj;
+        if (this.cod != other.cod) {
+            return false;
+        }
+        if (this.codCidade != other.codCidade) {
+            return false;
+        }
+        if (!Objects.equals(this.nome, other.nome)) {
+            return false;
+        }
+        if (!Objects.equals(this.sobrenome, other.sobrenome)) {
+            return false;
+        }
+        return true;
+    }
     
 }

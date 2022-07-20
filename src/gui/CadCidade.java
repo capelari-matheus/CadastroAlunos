@@ -248,7 +248,7 @@ public class CadCidade extends javax.swing.JDialog {
             cidadeDao.salvarRegistro(cidade);
             JOptionPane.showMessageDialog(this, "Sucesso");
 
-        } catch (SQLException e1) {
+        } catch (Exception e1) {
             JOptionPane.showMessageDialog(this, "Erro: " + e1.getMessage());
         }
     }//GEN-LAST:event_btSalvarActionPerformed
@@ -259,7 +259,7 @@ public class CadCidade extends javax.swing.JDialog {
         try {
             cidadeDao.excluirRegistro(Integer.parseInt(cod));
             JOptionPane.showMessageDialog(this, "Sucesso");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }//GEN-LAST:event_btExcluirActionPerformed
@@ -276,7 +276,7 @@ public class CadCidade extends javax.swing.JDialog {
             } else {
                 JOptionPane.showMessageDialog(this, "Registro Não Encontrado ");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }//GEN-LAST:event_btPesquisarActionPerformed
@@ -356,7 +356,7 @@ public class CadCidade extends javax.swing.JDialog {
                 mostrarDados(cidade);
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }
@@ -369,7 +369,7 @@ public class CadCidade extends javax.swing.JDialog {
                 mostrarDados(cidade);
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }
@@ -382,7 +382,7 @@ public class CadCidade extends javax.swing.JDialog {
                 mostrarDados(cidade);
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }
@@ -395,7 +395,7 @@ public class CadCidade extends javax.swing.JDialog {
                 mostrarDados(cidade);
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }

@@ -3,6 +3,7 @@ package dao;
 import entity.Aluno;
 import factory.ConnectionFactory;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,150 +13,234 @@ import javax.swing.JOptionPane;
 public class AlunoDao {
 
     private Connection con;
-    private Statement stmt;
     private Statement stmtNavegar;
     private ResultSet rsNavegar;
+    private PreparedStatement psAluno = null;
+    private ResultSet rsAluno = null;
 
-    public AlunoDao() throws ClassNotFoundException, SQLException {
+    public AlunoDao() {
+        try {
+            con = ConnectionFactory.getConnection();
+            stmtNavegar = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            rsNavegar = stmtNavegar.executeQuery("select * from ALUNO");
+        } catch (Exception e) {
+            e.printStackTrace();
 
-        con = ConnectionFactory.getConnection();
-        stmt = con.createStatement();
-        stmtNavegar = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        rsNavegar = stmtNavegar.executeQuery("select * from ALUNO");
-
+        }
     }
 
-    public Aluno primeiro() throws SQLException {
+    public Aluno primeiro() {
+        try {
+            if (rsNavegar.first()) {
+                Aluno aluno = new Aluno();
+                aluno.setCod(rsNavegar.getInt("cod"));
+                aluno.setNome(rsNavegar.getString("nome"));
+                aluno.setSobrenome(rsNavegar.getString("sobrenome"));
+                aluno.setCodCidade(rsNavegar.getInt("codCidade"));
+                return aluno;
 
-        if (rsNavegar.first()) {
-            Aluno aluno = new Aluno();
-            aluno.setCod(rsNavegar.getInt("cod"));
-            aluno.setNome(rsNavegar.getString("nome"));
-            aluno.setSobrenome(rsNavegar.getString("sobrenome"));
-            aluno.setCodCidade(rsNavegar.getInt("codCidade"));
-            return aluno;
-
-        } else {
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
 
     }
 
-    public Aluno anterior() throws SQLException {
+    public Aluno anterior() {
+        try {
+            if (!rsNavegar.isFirst()) {
+                rsNavegar.previous();
+                Aluno aluno = new Aluno();
+                aluno.setCod(rsNavegar.getInt("cod"));
+                aluno.setNome(rsNavegar.getString("nome"));
+                aluno.setSobrenome(rsNavegar.getString("sobrenome"));
+                aluno.setCodCidade(rsNavegar.getInt("codCidade"));
+                return aluno;
 
-        if (!rsNavegar.isFirst()) {
-            rsNavegar.previous();
-            Aluno aluno = new Aluno();
-            aluno.setCod(rsNavegar.getInt("cod"));
-            aluno.setNome(rsNavegar.getString("nome"));
-            aluno.setSobrenome(rsNavegar.getString("sobrenome"));
-            aluno.setCodCidade(rsNavegar.getInt("codCidade"));
-            return aluno;
-
-        } else {
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
 
     }
 
-    public Aluno proximo() throws SQLException {
+    public Aluno proximo() {
+        try {
+            if (!rsNavegar.isLast()) {
+                rsNavegar.next();
+                Aluno aluno = new Aluno();
+                aluno.setCod(rsNavegar.getInt("cod"));
+                aluno.setNome(rsNavegar.getString("nome"));
+                aluno.setSobrenome(rsNavegar.getString("sobrenome"));
+                aluno.setCodCidade(rsNavegar.getInt("codCidade"));
+                return aluno;
 
-        if (!rsNavegar.isLast()) {
-            rsNavegar.next();
-            Aluno aluno = new Aluno();
-            aluno.setCod(rsNavegar.getInt("cod"));
-            aluno.setNome(rsNavegar.getString("nome"));
-            aluno.setSobrenome(rsNavegar.getString("sobrenome"));
-            aluno.setCodCidade(rsNavegar.getInt("codCidade"));
-            return aluno;
-
-        } else {
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
 
-    public Aluno ultimo() throws SQLException {
-
-        if (rsNavegar.last()) {
-            Aluno aluno = new Aluno();
-            aluno.setCod(rsNavegar.getInt("cod"));
-            aluno.setNome(rsNavegar.getString("nome"));
-            aluno.setSobrenome(rsNavegar.getString("sobrenome"));
-            aluno.setCodCidade(rsNavegar.getInt("codCidade"));
-            return aluno;
-        } else {
+    public Aluno ultimo() {
+        try {
+            if (rsNavegar.last()) {
+                Aluno aluno = new Aluno();
+                aluno.setCod(rsNavegar.getInt("cod"));
+                aluno.setNome(rsNavegar.getString("nome"));
+                aluno.setSobrenome(rsNavegar.getString("sobrenome"));
+                aluno.setCodCidade(rsNavegar.getInt("codCidade"));
+                return aluno;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
 
     }
 
-    public Aluno pesquisarAluno(int cod) throws SQLException {
+    public Aluno pesquisarAluno(int cod) {
+        try {
+            StringBuilder sbSelect = new StringBuilder();
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT cod, nome, sobrenome, codCidade ");
+            sbSelect.append(" FROM aluno ");
+            sbSelect.append(" WHERE cod = ? ");
 
-        ResultSet rs = stmt.executeQuery("select * from ALUNO where cod = " + cod);
+            psAluno = con.prepareStatement(sbSelect.toString());
+            psAluno.clearParameters();
+            psAluno.setInt(1, cod);
+            rsAluno = psAluno.executeQuery();
 
-        if (rs.next()) {
-            Aluno aluno = new Aluno();
-            aluno.setCod(rs.getInt("cod"));
-            aluno.setNome(rs.getString("nome"));
-            aluno.setSobrenome(rs.getString("sobrenome"));
-            aluno.setCodCidade(rs.getInt("codCidade"));
-            return aluno;
-        } else {
+            if (rsAluno.next()) {
+                Aluno aluno = new Aluno();
+                aluno.setCod(rsAluno.getInt("cod"));
+                aluno.setNome(rsAluno.getString("nome"));
+                aluno.setSobrenome(rsAluno.getString("sobrenome"));
+                aluno.setCodCidade(rsAluno.getInt("codCidade"));
+                return aluno;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
 
     public boolean excluirRegistro(int cod) throws SQLException {
-
-        stmt.executeUpdate("delete from ALUNO where cod = " + cod);
-        rsNavegar = stmtNavegar.executeQuery("select * from ALUNO");
-        return true;
-    }
-
-    public boolean salvarRegistro(Aluno aluno) throws SQLException {
-
-        int cod = aluno.getCod();
-        String nome = aluno.getNome();
-        String sobrenome = aluno.getSobrenome();
-        int codCidade = aluno.getCodCidade();
-
         try {
-            stmt.executeUpdate("insert into ALUNO values ( " + cod + ", '" + nome + "', '" + sobrenome + "', " + codCidade + " )");
-            rsNavegar = stmtNavegar.executeQuery("select * from ALUNO");
+            StringBuilder sbSelect = new StringBuilder();
+
+            sbSelect.setLength(0);
+            sbSelect.append(" DELETE FROM aluno ");
+            sbSelect.append(" WHERE cod = ? ");
+
+            psAluno = con.prepareStatement(sbSelect.toString());
+            psAluno.clearParameters();
+            psAluno.setInt(1, cod);
+            psAluno.execute();
+
+            psAluno.close();
+
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT * ");
+            sbSelect.append(" FROM aluno ");
+
+            psAluno = con.prepareStatement(sbSelect.toString());
+            psAluno.clearParameters();
+            rsNavegar = psAluno.executeQuery();
+
+            psAluno.close();
             return true;
 
-        } catch (SQLException e) {
-
-           JOptionPane.showMessageDialog(null, "Falha ao inserir registro. " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
 
     }
 
-    public ArrayList listarAluno() throws SQLException {
+    public boolean salvarRegistro(Aluno aluno) {
 
-        Statement stmtListar = con.createStatement();
-        ResultSet rsListar = stmtListar.executeQuery("select * from ALUNO");
+        try {
 
-        ArrayList<Aluno> retorno = new ArrayList<Aluno>();
+            StringBuilder sbSelect = new StringBuilder();
+            sbSelect.setLength(0);
 
-        while (rsListar.next()) {
-            int cod = rsListar.getInt("cod");
-            String nome = rsListar.getString("nome");
-            String sobrenome = rsListar.getString("sobrenome");
-            int codCidade = rsListar.getInt("codCidade");
+            sbSelect.append(" INSERT INTO aluno  ");
+            sbSelect.append(" (cod, nome, sobrenome, codCidade)  ");
+            sbSelect.append(" VALUES(?,?,?,?) ");
 
-            Aluno aluno = new Aluno();
-            aluno.setCod(cod);
-            aluno.setNome(nome);
-            aluno.setSobrenome(sobrenome);
-            aluno.setCodCidade(codCidade);
+            psAluno = con.prepareStatement(sbSelect.toString());
+            psAluno.clearParameters();
+            psAluno.setInt(1, aluno.getCod());
+            psAluno.setString(2, aluno.getNome());
+            psAluno.setString(3, aluno.getSobrenome());
+            psAluno.setInt(4, aluno.getCodCidade());
 
-            retorno.add(aluno);
+            psAluno.execute();
+
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT * ");
+            sbSelect.append(" FROM aluno ");
+
+            psAluno = con.prepareStatement(sbSelect.toString());
+            psAluno.clearParameters();
+            rsNavegar = psAluno.executeQuery();
+
+            return true;
+
+        } catch (SQLException e) {
+
+            JOptionPane.showMessageDialog(null, "Falha ao inserir registro. " + e.getMessage());
+            return false;
         }
 
-        return retorno;
     }
 
+    public ArrayList listarAluno() {
+        try {
+
+            StringBuilder sbSelect = new StringBuilder();
+
+            ArrayList<Aluno> retorno = new ArrayList<Aluno>();
+
+            sbSelect.setLength(0);
+            sbSelect.append(" SELECT cod, nome, sobrenome, codCidade");
+            sbSelect.append(" FROM aluno ");
+            sbSelect.append(" order by cod ");
+
+            psAluno = con.prepareStatement(sbSelect.toString());
+            rsAluno = psAluno.executeQuery();
+
+            while (rsAluno.next()) {
+
+                Aluno aluno = new Aluno();
+                aluno.setCod(rsAluno.getInt("cod"));
+                aluno.setNome(rsAluno.getString("nome"));
+                aluno.setSobrenome(rsAluno.getString("sobrenome"));
+                aluno.setCodCidade(rsAluno.getInt("codCidade"));
+
+                retorno.add(aluno);
+            }
+
+            return retorno;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 }
