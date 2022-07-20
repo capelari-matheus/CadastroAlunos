@@ -24,6 +24,9 @@ public class CadAluno extends javax.swing.JDialog {
         iniciarBD();
         montarListaCidade();
         primeiro();
+        //comentario teste para new
+        
+        
     }
 
     /**
