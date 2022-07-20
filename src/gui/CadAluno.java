@@ -25,6 +25,9 @@ public class CadAluno extends javax.swing.JDialog {
         montarListaCidade();
         primeiro();
         //teste comentario master
+        //comentario teste para new
+        
+        
     }
 
     /**
